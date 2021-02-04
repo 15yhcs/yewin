@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Schedule Details</title>
+        <link rel="stylesheet" type="text/css" href="/style.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+      </head>
+    <body>
+      <h1 class="h1" style="padding: 20px 20px 20px 20px;">Show Schedule</h1>
+   
+<!---
+    <div class="form-group" style="float:left;display:flex;width:50%" >
+    <input class="form-control"  type="text" placeholder="search session">
+    <span class="input-group-addon" style="color: #faf4f4; "></span>
+    <input class="form-control"  type="text" placeholder="search ID">
+    <span class="input-group-addon" style="color: #faf4f4; "></span>
+
+</div>
+-->
+<form class="form-inline">
+    <div class="form-group">
+      <label for="Filter session"></label>
+      <input type="text" class="form-control" id="Filter session" placeholder="Filter session">
+    </div>
+    <div class="form-group">
+        <label for="Filter type"></label>
+         <select class="form-control">
+        <option>session type</option>
+        <option>session date</option>
+    </select>
+    </div>
+  </form>
+<br><br><br>
+  <form class="form-inline">
+    <div class="form-group">
+      <label for="Sort ession"></label>
+      <input type="text" class="form-control" id="Sort ession" placeholder="Sort ession">
+    </div>
+    <div class="form-group">
+        <label for="Filter type"></label>
+         <select class="form-control">
+        <option>Duration</option>
+        <option>Alphabetical order</option>
+    </select>
+    </div>
+    <div style="text-align:left">
+        <button type="button" class="btn btn-primary btn-sm active">submit</button></div>
+  </form>
+  <br>
+<br>
+<form class="form-inline">
+    <div class="form-group">
+      <label for="Add session"></label>
+      <input type="text" class="form-control" id="Add session" placeholder="Add session">
+    </div>
+    <div class="form-group">
+        <label for="Select session"></label>
+         <select class="form-control">
+        <option>Interview</option>
+        <option>Physical assessment</option>
+        <option>Other</option>
+    </select>
+    </div>
+    <div class="form-group">
+        <label for="Add instructor"></label>
+        <input type="text" class="form-control" id="Add instructor" placeholder="Add instructor">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Add instructor" placeholder="search instructor">
+    </div>
+</form>
+<br>
+<br>
+<form class="form-inline">
+    <div class="form-group">
+      <label for="Select time"></label>
+      <input type="text" class="form-control" id="Select time" placeholder="Select time">
+    </div>
+    <div class="form-group">
+        <label for="Select time"></label>
+        <input type="date" class="form-control" id="Select time">
+    </div>
+    <div style="text-align:left">
+        <button type="button" class="btn btn-primary btn-sm active">submit</button></div> 
+ <br>
+ <br>       
+        
+<!--create table for show the schedule-->
+  </form>
+  <table class="table table-bordered">
+	<thead>
+		<tr>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Session 1</td>
+			<td>Start time:  End time:  Patricipants: Hours: </td>
+			
+		</tr>
+		<tr>
+			<td>Session 2</td>
+			<td>Start time:     End time:  </td>
+		</tr>
+    <tr>
+			<td>Session 3</td>
+			<td>Appointments </td>
+    </tr>
+    <tr>
+			<td>Session 4</td>
+			<td>Start time:     End time:  </td>		
+		</tr>
+  </tbody>
+<br><br>
+  <!--pop up-->
+ 
