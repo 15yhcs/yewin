@@ -63,15 +63,11 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 	margin-bottom: 5px; 
 }
 
-label {
-    display: block;
-    font: 1rem 'Fira Sans', sans-serif;
+label{
+	margin-top: 1rem;
+    text-align: left;
 }
 
-input,
-label {
-    margin: .4rem 0;
-}
 
 #PaidAmount{
 	visibility: visible;
@@ -84,3 +80,4 @@ label {
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem;
 }
+

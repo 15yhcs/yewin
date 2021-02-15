@@ -43,10 +43,10 @@ class DBService{
         }
     }
 
-    async insertNewPatient(patientNum,firstName,LastName,Gender,birthday,age,email,Ptype,assignedDoc,MedicalHis,PaidAmount,st,city,postalCode,Province,country,ContactName,PhoneNum,salutation,Mname,Pphone,Cphone,tStatus,tcause,verteran,group,sDate,eDate,Disability){
+    async insertNewPatient(patientNum,firstName,LastName,Gender,birthday,age,email,Ptype,assignedDoc,MedicalHis,PaidAmount,st,city,postalCode,Province,country,ContactName,PhoneNum,salutation,Mname,Pphone,Cphone,tStatus,tcause,verteran,group,sDate,eDate,servingDuration,Disability){
         try{
-            var query = "INSERT INTO patient (PatientNum,Fname,Lname,Gender,Birthday,Age,Email,Ptype,assignedDoc,MedicalH,PaidAmount,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,servingDuration) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                connection.query(query, [patientNum,firstName,LastName,Gender,birthday,age,email,Ptype,assignedDoc,MedicalHis,PaidAmount,st,city,postalCode,Province,country,ContactName,PhoneNum,salutation,Mname,Pphone,Cphone,tStatus,tcause,verteran,group,sDate,eDate,Disability] ,(error,results) => {
+            var query = "INSERT INTO patient (PatientNum,Fname,Lname,Gender,Birthday,Age,Email,Ptype,assignedDoc,MedicalH,PaidAmount,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,servingDuration,disbility) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                connection.query(query, [patientNum,firstName,LastName,Gender,birthday,age,email,Ptype,assignedDoc,MedicalHis,PaidAmount,st,city,postalCode,Province,country,ContactName,PhoneNum,salutation,Mname,Pphone,Cphone,tStatus,tcause,verteran,group,sDate,eDate,servingDuration,Disability] ,(error,results) => {
                     console.log(results);
                 })
         }catch(error){
@@ -105,6 +105,143 @@ class DBService{
                     resolve(result);
                 })
             })
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async getAllPatientInfo(Id){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT * FROM patient WHERE PatientNum = ?";
+                connection.query(query, [Id], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async updatePatient(Fname,Lname,Gender,Age,Email,Ptype,assignedDoc,MedicalH,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,disbility,extraNote,PatientNum){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "UPDATE patient SET Fname = ?, Lname = ?, Gender = ?, Age = ?, Email = ?, Ptype = ?, assignedDoc = ?, MedicalH = ?, Street = ?, city = ?, PostalCode = ?, province = ?, country = ?, EmergencyContactName = ?, EmergencyContactNum = ?, Salutation = ?, mailingName = ?, homePhone = ?, cellPhone = ?, tStatus = ?, tCause = ?, vstatus = ?, a_group = ?, start_date = ?, end_date = ?, extraNote = ? WHERE PatientNum = ?";
+                connection.query(query, [Fname,Lname,Gender,Age,Email,Ptype,assignedDoc,MedicalH,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,disbility,extraNote,PatientNum], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async insertNewDoc(file_name, file_type, file){
+        try{
+            var query = "INSERT INTO document (name, type, fileContent) VALUES (?,?,?)";
+                connection.query(query, [file_name, file_type, file] ,(error,results) => {
+                    console.log(results);
+                })
+        }catch(error){
+            console.log(error);
+        }
+    }
+
+    async getAllDoc(){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT * FROM document";
+                connection.query(query, (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async getCourse(){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT DISTINCT courseName FROM course INNER JOIN waiting ON course.c_id = waiting.course";
+                connection.query(query, (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async getCourseWaitList(course){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT DISTINCT * FROM waiting INNER JOIN course ON course.c_id = waiting.course WHERE course.courseName = ?";
+                connection.query(query,[course],(error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async deleteRow(patientName, courseName){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "DELETE FROM waiting WHERE patient = ? AND course = ?";
+                connection.query(query,[patientName, courseName], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
             return response;
             
         }
