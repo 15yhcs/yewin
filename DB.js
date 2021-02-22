@@ -22,6 +22,23 @@ class DBService{
         return instance ? instance : new DBService()
     }
 
+    async searchAdmin(user,psw){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'SELECT adminID from admin WHERE username = ? and password = ?';
+                connection.query(query, [user,psw], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+    }
+
     async getPatient(){
         try{
             const response = await new Promise((resolve, reject) => {
@@ -246,6 +263,43 @@ class DBService{
             
         }
 
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async createSession(id,instructor,link,type,year,month,day,startTime,endTime){
+        try{
+            console.log(id,instructor,link,type,year,month,day,startTime,endTime);
+            const response = await new Promise((resolve, reject) => {
+                const query = 'INSERT INTO session(sessionID,year,month,day,startTime,endTime,instructor,link,sessionType)VALUE(?,?,?,?,?,?,?,?,?)';
+                connection.query(query, [id,year,month,day,startTime,endTime,instructor,link,type], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    console.log(result);
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+    }
+
+    async getSessionList(year, month, day) {
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT * FROM session WHERE year = ? AND month = ? AND day = ?";
+                connection.query(query,[year, month, day],(error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            return response;
+        }
         catch(error){
             console.log(error);
         }

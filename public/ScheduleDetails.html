@@ -4,11 +4,14 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Schedule Details</title>
-        <link rel="stylesheet" type="text/css" href="/style.css">
+        <link rel="stylesheet" type="text/css" href="../style.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-      </head>
+    	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+      <script src="./js/scheduleDetail.js"></script>  
+    </head>
     <body>
       <h1 class="h1" style="padding: 20px 20px 20px 20px;">Show Schedule</h1>
    
@@ -21,36 +24,47 @@
 
 </div>
 -->
+
+<form class="form-inline">
+  <div class="form-group">
+    <label for="Search session ID"></label>
+    <input type="text" class="form-control" id="Search session ID" placeholder="Search session ID">
+  </div>
+  <div class="form-group">
+      <label for="Search session ID"></label>
+  </div>
+</form>
+<br><br>
 <form class="form-inline">
     <div class="form-group">
-      <label for="Filter session"></label>
-      <input type="text" class="form-control" id="Filter session" placeholder="Filter session">
+      <label for="Choose session type "></label>
+      <input type="text" class="form-control" id="Choose session type " placeholder="Choose session type ">
     </div>
     <div class="form-group">
-        <label for="Filter type"></label>
+        <label for="Session type"></label>
          <select class="form-control">
-        <option>session type</option>
-        <option>session date</option>
+        <option>Interview</option>
+        <option>Physical Assessment</option>
+        <option>Other</option>
     </select>
     </div>
   </form>
-<br><br><br>
-  <form class="form-inline">
-    <div class="form-group">
-      <label for="Sort ession"></label>
-      <input type="text" class="form-control" id="Sort ession" placeholder="Sort ession">
-    </div>
-    <div class="form-group">
-        <label for="Filter type"></label>
-         <select class="form-control">
-        <option>Duration</option>
-        <option>Alphabetical order</option>
-    </select>
-    </div>
-    <div style="text-align:left">
-        <button type="button" class="btn btn-primary btn-sm active">submit</button></div>
-  </form>
-  <br>
+<br>
+<script language="javascript" type="text/javascript">
+	function setVar(v_sel){
+	 	document.form0.txta1.value = v_sel.value;
+	}
+</script>
+<form name="form0" method="post" action="">
+<select name="sel1" id="sel1" onchange="setVar(this);">
+ <option value="">Enter Duration time</option>
+ <option value="">Enter start time</option>
+
+</select>
+<textarea id="txta1" name="txta1"></textarea>
+</form>
+
+<br>
 <br>
 <form class="form-inline">
     <div class="form-group">
@@ -65,6 +79,9 @@
         <option>Other</option>
     </select>
     </div>
+  </form>
+  <br><br>
+    <form class="form-inline">
     <div class="form-group">
         <label for="Add instructor"></label>
         <input type="text" class="form-control" id="Add instructor" placeholder="Add instructor">
@@ -72,7 +89,7 @@
     <div class="form-group">
         <input type="text" class="form-control" id="Add instructor" placeholder="search instructor">
     </div>
-</form>
+  </form>
 <br>
 <br>
 <form class="form-inline">
@@ -84,37 +101,57 @@
         <label for="Select time"></label>
         <input type="date" class="form-control" id="Select time">
     </div>
-    <div style="text-align:left">
-        <button type="button" class="btn btn-primary btn-sm active">submit</button></div> 
+    <br>
+    </form>
+  <br>
+ <br> 
+ <button type="button" class="btn btn-primary btn-sm active" onclick="searchSession()">submit</button>  
  <br>
- <br>       
-        
+ <br>   
+ <button type="button" class="btn btn-primary btn-sm active" onclick="gotoCreate()">create Session</button> 
 <!--create table for show the schedule-->
-  </form>
-  <table class="table table-bordered">
+  <table id="schedule-detail-table" class="table table-bordered">
 	<thead>
 		<tr>
 		</tr>
 	</thead>
 	<tbody>
-		<tr>
-			<td>Session 1</td>
-			<td>Start time:  End time:  Patricipants: Hours: </td>
-			
-		</tr>
-		<tr>
-			<td>Session 2</td>
-			<td>Start time:     End time:  </td>
-		</tr>
-    <tr>
-			<td>Session 3</td>
-			<td>Appointments </td>
-    </tr>
-    <tr>
-			<td>Session 4</td>
-			<td>Start time:     End time:  </td>		
-		</tr>
   </tbody>
-<br><br>
+  </table>
+</form>
+
+<br>
   <!--pop up-->
- 
+  <!-- press add button -->
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">
+           Prompt from add session
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" 
+              aria-hidden="true">×
+          </button>
+        </div>
+        <div class="modal-body">
+          Conflict Status
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" 
+              data-dismiss="modal">NO
+          </button>
+          <button type="button" class="btn btn-primary">
+           YES
+          </button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->  
+
+  <button onclick="goBack()">Go Back</button>
+  
+  </body>
+</html>
+  

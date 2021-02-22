@@ -81,3 +81,50 @@ label{
 	margin-bottom: 0.5rem;
 }
 
+/*sign in*/
+.page {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-height: 100%;
+	padding: 20px;
+	height: 100vh;
+}
+  
+#formContent {
+	background: #fff;
+	padding: 30px;
+	width: 90%;
+	max-width: 500px;
+	position: relative;
+	padding: 40px;
+	box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+	text-align: center;
+}
+  
+#login {
+	background-color: #1f7ed6;
+	border: none;
+	color: white;
+	padding: 10px 120px;
+	margin-top: 20px;
+	text-align: center;
+	display: inline-block;
+}
+  
+  
+#user,#psw {
+	background-color: #f6f6f6;
+	border: none;
+	padding: 15px 30px;
+	margin: 10px 5px;
+	text-align: center;
+	display: inline-block;
+	width: 70%;
+}
+  
+*:focus {
+	  outline-color: #1f7ed6;
+} 
+ 

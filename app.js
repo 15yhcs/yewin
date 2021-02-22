@@ -24,9 +24,45 @@ app.use(up_file());
 
 
 
+// app.get("/",function(req,res){
+//     res.sendFile(path.join(__dirname + "/index.html"));
+// });
+
 app.get("/",function(req,res){
+    res.sendFile(path.join(__dirname + "/public/signIn.html"));
+});
+
+app.get("/index",function(req,res){
     res.sendFile(path.join(__dirname + "/index.html"));
 });
+
+app.get("/main",function(req,res){
+    res.sendFile(path.join(__dirname + "/public/main.html"));
+});
+
+app.post("/login",function(req,res){
+    var user = req.body.user;
+    var psw = req.body.psw;
+    // cannot log in without entering both username & psw
+    if (user && psw){
+        const db = DBService.getDbServiceInstance();
+        const result = db.searchAdmin(user,psw);
+        result.then( data =>{
+            if(data.length > 0){
+                console.log("login sucessed");
+                res.redirect('/index');
+            }
+            else{
+            console.log("login failed");
+            // retry
+            res.redirect('/');
+            }
+        }).catch(error => console.log(error));
+    }
+    else{
+        res.redirect('/');
+    }
+})
 
 app.post("/createProfile",function(req,res){
     var patientNum = req.body.patientNum;
@@ -161,6 +197,31 @@ app.delete("/deleteRow/:patientName/:courseID", function(req,res){
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 })
 
+app.get("/getSession/:year/:month/:day", function(req, res) {
+    const {year, month, day} = req.params;
+    const db = DBService.getDbServiceInstance();
+    const result = db.getSessionList(year, month, day);
+    result.then(data => res.json({data : data})).catch(error => console.log(error));
+})
+
+app.post("/createSession",function(req,res){
+    var id = req.body.sessionID;
+    var instructor = req.body.instructor;
+    var link = req.body.sessionLink;
+    var type = req.body.sessionType;
+    var year = req.body.year;
+    var month = req.body.month;
+    var day = req.body.day;
+    var startTime = req.body.startTime;
+    var endTime = req.body.endTime;
+
+    if (id && instructor && link && type && year && month && day && startTime && endTime){
+        console.log(id);
+        const db = DBService.getDbServiceInstance();
+        db.createSession(id,instructor,link,type,year,month,day,startTime,endTime);
+        
+    }
+})
 
 app.listen(5000, function(){
     console.log("Server running on port 5000");
