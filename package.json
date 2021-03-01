@@ -16,7 +16,8 @@
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "request": "^2.88.2",
-    "window-popup": "^1.1.0"
+    "window-popup": "^1.1.0",
+    "xlsx": "^0.16.9"
   },
   "devDependencies": {
     "node-popup": "^0.1.14",

@@ -267,13 +267,12 @@ class DBService{
             console.log(error);
         }
     }
-
-    async createSession(id,instructor,link,type,year,month,day,startTime,endTime){
+    // id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration
+    async createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration){
         try{
-            console.log(id,instructor,link,type,year,month,day,startTime,endTime);
             const response = await new Promise((resolve, reject) => {
-                const query = 'INSERT INTO session(sessionID,year,month,day,startTime,endTime,instructor,link,sessionType)VALUE(?,?,?,?,?,?,?,?,?)';
-                connection.query(query, [id,year,month,day,startTime,endTime,instructor,link,type], (error,result) => {
+                const query = 'INSERT INTO session(sessionID,start_date,end_date,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDays,sessionDuration)VALUE(?,?,?,?,?,?,?,?,?,?,?)';
+                connection.query(query, [id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration], (error,result) => {
                     if(error){
                         reject(new Error(error.message));
                     }
@@ -287,11 +286,29 @@ class DBService{
             console.log(error);}
     }
 
-    async getSessionList(year, month, day) {
+    async getSessionList() {
         try{
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT * FROM session WHERE year = ? AND month = ? AND day = ?";
-                connection.query(query,[year, month, day],(error,result) => {
+                const query = "SELECT sessionID, sessionName, repeatDays, startTime, endTime FROM session";
+                connection.query(query,(error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            return response;
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async getSessionParticipants(req_session) {
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT PatientNum, Fname, Lname, cellPhone, Email FROM patient INNER JOIN participate on patient.PatientNum = participate.patient WHERE participate.session = ?";
+                connection.query(query,[req_session],(error,result) => {
                     if(error){
                         reject(new Error(error.message));
                     }

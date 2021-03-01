@@ -5,14 +5,15 @@ const cors = require('cors');
 const https = require("https");
 const moment = require("moment");
 const up_file = require("express-fileupload")
-
+const out_excel = require("xlsx");
 
 
 
 const app = express();
 const DBService = require("./DB");
-var path = require("path");
+const path = require("path");
 const { log } = require("console");
+const { type } = require("os");
 
 
 app.use(bodyParser.urlencoded({extended : true}));
@@ -24,21 +25,21 @@ app.use(up_file());
 
 
 
-// app.get("/",function(req,res){
-//     res.sendFile(path.join(__dirname + "/index.html"));
-// });
-
 app.get("/",function(req,res){
-    res.sendFile(path.join(__dirname + "/public/signIn.html"));
-});
-
-app.get("/index",function(req,res){
     res.sendFile(path.join(__dirname + "/index.html"));
 });
 
-app.get("/main",function(req,res){
-    res.sendFile(path.join(__dirname + "/public/main.html"));
-});
+// app.get("/",function(req,res){
+//     res.sendFile(path.join(__dirname + "/public/signIn.html"));
+// });
+
+// app.get("/index",function(req,res){
+//     res.sendFile(path.join(__dirname + "/index.html"));
+// });
+
+// app.get("/main",function(req,res){
+//     res.sendFile(path.join(__dirname + "/public/main.html"));
+// });
 
 app.post("/login",function(req,res){
     var user = req.body.user;
@@ -143,9 +144,9 @@ app.get("/getAllInfo/:name", function(req,res){
 
 //updating
 app.patch("/update", function(req,res){
-    const { PatientNum,Fname,Lname,Gender,Birthday,Age,Email,Ptype,assignedDoc,MedicalH,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,extraNote } = req.body;
+    const { PatientNum,Fname,Lname,Gender,Age,Email,Ptype,assignedDoc,MedicalH,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,extraNote } = req.body;
     const db = DBService.getDbServiceInstance();
-    const result = db.updatePatient(Fname,Lname,Gender,Birthday,Age,Email,Ptype,assignedDoc,MedicalH,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,extraNote,PatientNum);
+    const result = db.updatePatient(Fname,Lname,Gender,Age,Email,Ptype,assignedDoc,MedicalH,Street,city,PostalCode,province,country,EmergencyContactName,EmergencyContactNum,Salutation,mailingName,homePhone,cellPhone,tStatus,tCause,vstatus,a_group,start_date,end_date,extraNote,PatientNum);
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 })
 
@@ -197,32 +198,101 @@ app.delete("/deleteRow/:patientName/:courseID", function(req,res){
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 })
 
-app.get("/getSession/:year/:month/:day", function(req, res) {
-    const {year, month, day} = req.params;
-    const db = DBService.getDbServiceInstance();
-    const result = db.getSessionList(year, month, day);
-    result.then(data => res.json({data : data})).catch(error => console.log(error));
-})
+// app.get("/getSession/:year/:month/:day", function(req, res) {
+//     const {year, month, day} = req.params;
+//     const db = DBService.getDbServiceInstance();
+//     const result = db.getSessionList(year, month, day);
+//     result.then(data => res.json({data : data})).catch(error => console.log(error));
+// })
 
 app.post("/createSession",function(req,res){
     var id = req.body.sessionID;
+    var sessionName = req.body.sessionName;
+    var sessionLink = req.body.sessionLink;
     var instructor = req.body.instructor;
-    var link = req.body.sessionLink;
-    var type = req.body.sessionType;
-    var year = req.body.year;
-    var month = req.body.month;
-    var day = req.body.day;
-    var startTime = req.body.startTime;
-    var endTime = req.body.endTime;
-
-    if (id && instructor && link && type && year && month && day && startTime && endTime){
-        console.log(id);
-        const db = DBService.getDbServiceInstance();
-        db.createSession(id,instructor,link,type,year,month,day,startTime,endTime);
+    var sessionType = req.body.sessionType;
+    var startDate = req.body.start_date;
+    var endDate = req.body.end_date;
+    var startTime = req.body.start_time;
+    var endTime = req.body.end_time;
+    var repeatDay = JSON.stringify(req.body.repeat_day);
+    var repeatDuration = req.body.repeat_duration;
+    
+    // console.log(id,sessionName,sessionLink,instructor,sessionType,startDate,endDate,startTime,endTime,repeatDay,repeatDuration);
+    
+    
         
+    const db = DBService.getDbServiceInstance();
+    db.createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration);
+        
+    
+})
+
+
+
+app.get("/getSession", function(req,res){
+    const db = DBService.getDbServiceInstance();
+    const result = db.getSessionList();
+    result.then(data => res.json({data : data})).catch(error => console.log(error));
+})
+
+app.get("/sessionParticipants/:name", function(req,res){
+    const { name } = req.params;
+    const db = DBService.getDbServiceInstance();
+    const result = db.getSessionParticipants(name);
+    result.then(data => res.json({data : data})).catch(error => console.log(error));
+})
+
+app.get("/export/:name", function(req,res){
+
+    const { name } = req.params;
+    const user_data = JSON.parse(name);
+    const user_columnName = [
+        "PatientID",
+        "First Name",
+        "Last Name",
+        "Cell Phone",
+        "Email"
+    ]
+    var array = [];
+    function user_data_map(user_data){
+        for(var i=0; i<user_data.length; i++){
+            array.push(
+                { 
+                    PatientNum : user_data[i].PatientNum, 
+                    Fname: user_data[i].Fname, 
+                    Lname: user_data[i].Lname, 
+                    cellPhone: user_data[i].cellPhone, 
+                    Email: user_data[i].Email
+                }
+            )
+        }
     }
+
+    user_data_map(user_data);
+    const final_data = array.map(user =>{
+        return[user.PatientNum,user.Fname,user.Lname,user.cellPhone,user.Email];
+    })
+    const user_sheet_name = "users";
+    const user_path = __dirname + "/exportContent.xlsx";
+    const export_excel = (data, workSheetColumnNames, workSheetName, filePath) => {
+        const workBook = out_excel.utils.book_new();
+        const workSheetData = [
+            workSheetColumnNames,
+            ... data
+        ];
+        const workSheet = out_excel.utils.aoa_to_sheet(workSheetData);
+        out_excel.utils.book_append_sheet(workBook, workSheet, workSheetName);
+        out_excel.writeFile(workBook, path.resolve(filePath));
+    }
+
+    export_excel(final_data,user_columnName,user_sheet_name,user_path);
+    
+
+    
 })
 
 app.listen(5000, function(){
     console.log("Server running on port 5000");
 });
+
