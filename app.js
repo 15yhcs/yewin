@@ -14,6 +14,7 @@ const DBService = require("./DB");
 const path = require("path");
 const { log } = require("console");
 const { type } = require("os");
+const { json } = require("body-parser");
 
 
 app.use(bodyParser.urlencoded({extended : true}));
@@ -30,7 +31,7 @@ app.get("/",function(req,res){
 });
 
 // app.get("/",function(req,res){
-//     res.sendFile(path.join(__dirname + "/public/signIn.html"));
+//     res.sendFile(path.join(__dirname + "/signIn.html"));
 // });
 
 // app.get("/index",function(req,res){
@@ -217,13 +218,14 @@ app.post("/createSession",function(req,res){
     var endTime = req.body.end_time;
     var repeatDay = JSON.stringify(req.body.repeat_day);
     var repeatDuration = req.body.repeat_duration;
+    var repeatStatus = req.body.repeat_status;
     
     // console.log(id,sessionName,sessionLink,instructor,sessionType,startDate,endDate,startTime,endTime,repeatDay,repeatDuration);
     
     
         
     const db = DBService.getDbServiceInstance();
-    db.createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration);
+    db.createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus);
         
     
 })

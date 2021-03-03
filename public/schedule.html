@@ -4,79 +4,18 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Schedule</title>
-        <script src="js/schedule.js"></script>
         <link rel="stylesheet" type="text/css" href="../style.css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    </head>
+        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.css" rel="stylesheet"/>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.js"></script>
+        
+    </head>    
     <body>
         <h1 class="h1" style="padding: 20px 20px 20px 20px;">Schedule</h1>
-        <div class="form-group" style="width:50%;display: flex;" >
-            <input class="form-control" id="year-input"  type="text" placeholder="search year">
-            <span class="input-group-addon" style="color: #faf4f4; "></span>
-            <button class="scheduleSearch" onclick="searchYear()">Search</button> 
+        <hr>
+        <div class="container" id="calendar">
+            
         </div>
-        <div style="width:50%;display: flex;">
-            <input class="form-control"  id="month-input" type="text" placeholder="search month">
-            <span class="input-group-addon" style="color: #faf4f4; "></span>
-            <button class="scheduleSearch" onclick="searchMonth()">Search</button> 
-        </div>
-       	<br>
-       	<br>
-		<br>
-     	<h1 id="year-header">2021</h1>
-        <h1 id="month-header">October</h1>
-
-        <table class="table table-bordered">
-            <form action="/click" method="post">
-            <tbody>
-                <tr>
-                    <td onclick="gotoDate(1)">1</td>
-                    <td onclick="gotoDate(2)">2</td> 
-                    <td onclick="gotoDate(3)">3</td>
-                    <td onclick="gotoDate(4)">4</td>
-                    <td onclick="gotoDate(5)">5</td>
-                    <td onclick="gotoDate(6)">6</td>
-                    <td onclick="gotoDate(7)">7</td>
-                </tr>
-                <tr>
-                    <td onclick="gotoDate(8)">8</td>
-                    <td onclick="gotoDate(9)">9</td> 
-                    <td onclick="gotoDate(10)">10</td>
-                    <td onclick="gotoDate(11)">11</td>
-                    <td onclick="gotoDate(12)">12</td>
-                    <td onclick="gotoDate(13)">13</td>
-                    <td onclick="gotoDate(14)">14</td>
-                </tr>
-                <tr>
-                    <td onclick="gotoDate(15)">15</td>
-                    <td onclick="gotoDate(16)">16</td> 
-                    <td onclick="gotoDate(17)">17</td>
-                    <td onclick="gotoDate(18)">18</td>
-                    <td onclick="gotoDate(19)">19</td>
-                    <td onclick="gotoDate(20)">20</td>
-                    <td onclick="gotoDate(21)">21</td>
-                </tr>
-                <tr>
-                    <td onclick="gotoDate(22)">22</td>
-                    <td onclick="gotoDate(23)">23</td> 
-                    <td onclick="gotoDate(24)">24</td>
-                    <td onclick="gotoDate(25)">25</td>
-                    <td onclick="gotoDate(26)">26</td>
-                    <td onclick="gotoDate(27)">27</td>
-                    <td onclick="gotoDate(28)">28</td>
-                </tr>
-                <tr>
-                   <td onclick="gotoDate(29)">29</td>
-                   <td onclick="gotoDate(30)">30</td> 
-                   <td onclick="gotoDate(31)">31</td> 
-                   <td></td>
-                   <td></td>
-                   <td></td>
-                   <td></td>
-               </tr>
-            </tbody>
-        </form>
-        </table>
-
-
-</script>
+        <script src="js/schedule.js"></script>
+    </body>
+</html>

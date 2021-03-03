@@ -17,10 +17,7 @@ function loadAllsession(data){
     sessions.innerHTML = session_html;
  }
 
- function loadExportData(data){
-     var user = JSON.stringify(data);
-     console.log(user);
- }
+
 
 function loadHTMLTable(data){
     const table = document.querySelector('#sessionTable tbody');

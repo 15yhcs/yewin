@@ -268,11 +268,11 @@ class DBService{
         }
     }
     // id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration
-    async createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration){
+    async createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus){
         try{
             const response = await new Promise((resolve, reject) => {
-                const query = 'INSERT INTO session(sessionID,start_date,end_date,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDays,sessionDuration)VALUE(?,?,?,?,?,?,?,?,?,?,?)';
-                connection.query(query, [id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration], (error,result) => {
+                const query = 'INSERT INTO session(sessionID,start_date,end_date,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDays,sessionDuration,sessionStatus)VALUE(?,?,?,?,?,?,?,?,?,?,?,?)';
+                connection.query(query, [id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus], (error,result) => {
                     if(error){
                         reject(new Error(error.message));
                     }
@@ -289,7 +289,7 @@ class DBService{
     async getSessionList() {
         try{
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT sessionID, sessionName, repeatDays, startTime, endTime FROM session";
+                const query = "SELECT sessionID, sessionName, start_date, end_date, repeatDays, startTime, endTime, sessionStatus, sessionDuration FROM session";
                 connection.query(query,(error,result) => {
                     if(error){
                         reject(new Error(error.message));

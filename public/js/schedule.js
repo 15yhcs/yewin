@@ -1,54 +1,63 @@
-var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-function searchYear() {
-    var year = document.getElementById("year-input").value;
-    if (!isNaN(year)) {
-        var value = parseInt(year);
-        if (value < 0 || value > 2021) {
-            alert("Invalid input of year!");
-        } else {
-            document.getElementById("year-header").innerHTML = year;
-        }
-    } else {
-        alert("The format of input is wrong!");
-    }
+function show(data){
+    var calendarEl = document.getElementById('calendar');
+    var today = new Date();
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      initialDate: '2021-02-07',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: data
+        
+      ,
+      dateClick: function() {
+        alert('a day has been clicked!');
+      }
+    });
+
+    calendar.render();
+
+    calendar.on('dateClick', function(info) {
+        window.location.href = "ScheduleDetails.html?date=" + info.dateStr;
+    });
+
+    console.log(data);
+};
+
+function getAllSessions(){
+    fetch('http://localhost:5000/getSession').then(response => response.json())
+    .then(data=>
+        
+        show(data["data"].map(obj => {
+            if(obj.sessionStatus === "Yes"){
+              return {
+                title: obj.sessionName,
+                groupId: obj.sessionId,
+                daysOfWeek: obj.repeatDays,
+                startRecur: obj.start_date.substring(0,10),
+                endRecur: obj.end_date.substring(0,10),
+                startTime: obj.startTime,
+                endTime: obj.endTime,
+                color: "red"
+              }
+            }
+            else{
+              return {
+                title: obj.sessionName,
+                start: obj.start_date.substring(0,10) + "T" + obj.startTime,
+                end: obj.end_date.substring(0,10) + "T" + obj.endTime,
+                color: "rgb(0,0,0)"
+              };
+            }
+            
+        }))
+    )
 }
 
-function searchMonth() {
-    var month = document.getElementById("month-input").value;
-    if (!isNaN(month)) {
-        var value = parseInt(month);
-        if (value < 0 || value > 12) {
-            alert("Invalid input of month!");
-        } else {
-            document.getElementById("month-header").innerHTML = month;
-        }
-    } else {
-        alert("The format of input is wrong!");
-    }
-}
+getAllSessions();
 
-function gotoDate(day) {
-    var year = document.getElementById("year-header").innerText;
-    var monthString = document.getElementById("month-header").innerText;
-    var month = getMonth(monthString);
-    // window.location.href = "ScheduleDetails.html?date="+year+"-"+getFormatNumber(month)+"-"+getFormatNumber(day);
-    window.location.href = "ScheduleDetails.html?year="+year+"&month="+month+"&day="+day;
-}
 
-function getFormatNumber(number) {
-    if (number >= 10) {
-        return number+"";
-    } else {
-        return "0"+number;
-    }
-}
 
-function getMonth(month) {
-    for (let index = 0; index < months.length; index++) {
-        const element = months[index];
-        if (element == month) {
-            return index+1;
-        }
-    }
-}
