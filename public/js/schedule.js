@@ -1,10 +1,9 @@
 
-function show(data){
+function show(data,initial_date){
     var calendarEl = document.getElementById('calendar');
-    var today = new Date();
     var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
-      initialDate: '2021-02-07',
+      initialDate: initial_date,
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
@@ -13,9 +12,11 @@ function show(data){
       events: data
         
       ,
-      dateClick: function() {
-        alert('a day has been clicked!');
-      }
+      dateClick: function(info) {
+        alert("View details of: " + info.dateStr);
+      },
+      
+      
     });
 
     calendar.render();
@@ -24,7 +25,6 @@ function show(data){
         window.location.href = "ScheduleDetails.html?date=" + info.dateStr;
     });
 
-    console.log(data);
 };
 
 function getAllSessions(){
@@ -53,10 +53,21 @@ function getAllSessions(){
               };
             }
             
-        }))
+        }),getInitial_date())
     )
 }
 
+
+function getInitial_date(){
+    var today = new Date();
+    var today_year = today.getFullYear();
+    var today_month = today.getMonth() + 1;
+    var today_day = today.getDate();
+    if(today_day<10) today_day='0'+today_day;
+    if(today_month<10) today_month='0'+today_month;
+    var initial_date = today_year + '-' + today_month + '-' + today_day;
+    return initial_date;
+}
 getAllSessions();
 
 

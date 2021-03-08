@@ -268,11 +268,11 @@ class DBService{
         }
     }
     // id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration
-    async createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus){
+    async createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus,repeatDates){
         try{
             const response = await new Promise((resolve, reject) => {
-                const query = 'INSERT INTO session(sessionID,start_date,end_date,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDays,sessionDuration,sessionStatus)VALUE(?,?,?,?,?,?,?,?,?,?,?,?)';
-                connection.query(query, [id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus], (error,result) => {
+                const query = 'INSERT INTO session(sessionID,start_date,end_date,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDays,sessionDuration,sessionStatus,repeatDates)VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?)';
+                connection.query(query, [id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus,repeatDates], (error,result) => {
                     if(error){
                         reject(new Error(error.message));
                     }
@@ -289,7 +289,7 @@ class DBService{
     async getSessionList() {
         try{
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT sessionID, sessionName, start_date, end_date, repeatDays, startTime, endTime, sessionStatus, sessionDuration FROM session";
+                const query = "SELECT * FROM session";
                 connection.query(query,(error,result) => {
                     if(error){
                         reject(new Error(error.message));
@@ -321,7 +321,138 @@ class DBService{
             console.log(error);
         }
     }
+
+    async createCourse(id,name,spot){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'INSERT INTO course(c_id, courseName, courseSpot) VALUE(?,?,?)';
+                connection.query(query, [id,name,spot], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+
+    }
+
+    async getAllCourse(){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT * FROM course ";
+                connection.query(query, (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
     
+    async addIntoCourse(content){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'INSERT INTO Taken(patient,course) VALUE ?';
+                connection.query(query, [content], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+
+    }
+
+    async takenGroupStatus(course){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'SELECT COUNT(taken.patient) AS total_patient, course.c_id, course.courseSpot FROM course INNER JOIN taken ON taken.course = course.c_id where course.c_id = ? GROUP BY course.c_id';
+                connection.query(query,[course], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+
+    }
+    async deleteTakenRow(patientName, courseName){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "DELETE FROM taken WHERE patient = ? AND course = ?";
+                connection.query(query,[patientName, courseName], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async addIntoWaitlist(patientName, courseName){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'INSERT INTO waiting(patient,course) VALUE (?,?)';
+                connection.query(query, [patientName, courseName], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+
+    }
+
+    async addIntoSession(content){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'INSERT INTO participate(patient,session) VALUE ?';
+                connection.query(query, [content], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+
+    }
+
 }
 
 module.exports = DBService;

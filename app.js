@@ -199,12 +199,6 @@ app.delete("/deleteRow/:patientName/:courseID", function(req,res){
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 })
 
-// app.get("/getSession/:year/:month/:day", function(req, res) {
-//     const {year, month, day} = req.params;
-//     const db = DBService.getDbServiceInstance();
-//     const result = db.getSessionList(year, month, day);
-//     result.then(data => res.json({data : data})).catch(error => console.log(error));
-// })
 
 app.post("/createSession",function(req,res){
     var id = req.body.sessionID;
@@ -216,16 +210,78 @@ app.post("/createSession",function(req,res){
     var endDate = req.body.end_date;
     var startTime = req.body.start_time;
     var endTime = req.body.end_time;
-    var repeatDay = JSON.stringify(req.body.repeat_day);
+    var repeatDay_s = JSON.stringify(req.body.repeat_day);
     var repeatDuration = req.body.repeat_duration;
     var repeatStatus = req.body.repeat_status;
+
+
+    var repeatDay = req.body.repeat_day;
     
-    // console.log(id,sessionName,sessionLink,instructor,sessionType,startDate,endDate,startTime,endTime,repeatDay,repeatDuration);
+    if(repeatStatus === "Yes"){
+
+        var split_start_date = startDate.split("-");
+        var startYear = split_start_date[0];
+        var start_month_trim = () => {
+            if(split_start_date[1][0] == "0"){
+                return split_start_date[1][1];
+            }
+            else{
+                return split_start_date[1];
+            }
+        };
+        var start_day_trim = () => {
+            if(split_start_date[2][0] == "0"){
+                return split_start_date[2][1];
+            }
+            else{
+                return split_start_date[2];
+            }
+        };
+
+        var split_end_date = endDate.split("-");
+        var endYear = split_end_date[0];
+        var end_month_trim = () => {
+            if(split_end_date[1][0] == "0"){
+                return split_end_date[1][1];
+            }
+            else{
+                return split_end_date[1];
+            }
+        };
+        var end_day_trim = () => {
+            if(split_end_date[2][0] == "0"){
+                return split_end_date[2][1];
+            }
+            else{
+                return split_end_date[2];
+            }
+        };
+       
+        var daysOfYear = [];
+        var temp_start = new Date(startYear, start_month_trim()-1, start_day_trim());
+        var temp_end = new Date(endYear, end_month_trim()-1, end_day_trim());
+        var int_convert = arr => arr.map(Number);
+        var repeatDay_int = int_convert(repeatDay);
+        for (var d = temp_start; d <= temp_end; d.setDate(d.getDate() + 1)) {
+            var temp_d = new Date(d);
+            
+            if(repeatDay_int.includes(temp_d.getDay())){
+                daysOfYear.push(temp_d);
+            }
+        }
+        
+    }
+
+    var daysOfYear_s = JSON.stringify(daysOfYear);
+
+    
+    
+    
     
     
         
     const db = DBService.getDbServiceInstance();
-    db.createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay,repeatDuration,repeatStatus);
+    db.createSession(id,startDate,endDate,sessionLink,startTime,endTime,instructor,sessionType,sessionName,repeatDay_s,repeatDuration,repeatStatus,daysOfYear_s);
         
     
 })
@@ -237,6 +293,7 @@ app.get("/getSession", function(req,res){
     const result = db.getSessionList();
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 })
+
 
 app.get("/sessionParticipants/:name", function(req,res){
     const { name } = req.params;
@@ -292,6 +349,68 @@ app.get("/export/:name", function(req,res){
     
 
     
+})
+
+app.post("/createCourse",function(req,res){
+    var id = req.body.courseID;
+    var name = req.body.courseName;
+    var spot = req.body.courseSpot;
+    const db = DBService.getDbServiceInstance();
+    db.createCourse(id,name,spot);
+        
+})
+
+app.get("/getAllCourse",function(req,res){
+    const db = DBService.getDbServiceInstance();
+    const result = db.getAllCourse();
+    result.then(data => res.json({data : data})).catch(error => console.log(error));
+        
+})
+app.post("/addIntoCourse",function(req,res){
+    var content = req.body.addContent;
+    var result_int = [];
+    for (let i = 0; i < content.length; i++) {
+        var temp = [];
+        for (let j = 0; j < content[i].length; j++) {
+           temp.push(parseInt(content[i][j]));
+        }
+        result_int.push(temp)
+     }
+    var array_len = result_int.length
+    
+
+    const db = DBService.getDbServiceInstance();
+    db.addIntoCourse(result_int);
+    const result = db.takenGroupStatus(result_int[0][1]);
+    result.then(data => 
+            data.forEach(element => {
+                console.log(element);
+                if(element.total_patient <= element.courseSpot){
+                    res.json({success: true})
+                }
+                else{
+                    db.deleteTakenRow(result_int[array_len-1][0],result_int[array_len-1][1]);
+                    db.addIntoWaitlist(result_int[array_len-1][0],result_int[array_len-1][1]);
+                    res.json({delete: true})
+                }
+            })
+        ).catch(error => console.log(error));      
+})
+
+app.post("/addIntoSession",function(req,res){
+    var content = req.body.addContent;
+    var result_int = [];
+    for (let i = 0; i < content.length; i++) {
+        var temp = [];
+        for (let j = 0; j < content[i].length; j++) {
+           temp.push(parseInt(content[i][j]));
+        }
+        result_int.push(temp)
+     }
+
+    const db = DBService.getDbServiceInstance();
+    db.addIntoSession(result_int);
+         
 })
 
 app.listen(5000, function(){

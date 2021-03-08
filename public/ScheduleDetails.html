@@ -1,157 +1,75 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Schedule Details</title>
-        <link rel="stylesheet" type="text/css" href="../style.css">
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>createProfile</title>
+		<link rel="stylesheet" type="text/css" href="/style.css">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	</head>
+	<body>
+		<header>
+			<h1 class="h1" style="padding: 20px 20px 20px 20px;">Schedule details</h1>
+			<hr>
+		</header>
+		
+		
+		<div class="container" style="margin: 60px 60px 30px;" id="docContainer">
+			<div class="row">
+        <div class="col-4">
+          <div class="h-50">
+            <div class="input-group my-1">
+              <input type="search" class="form-control rounded" placeholder="Search Session ID" aria-label="Search"
+                aria-describedby="search-addon" id="searchSession"/>
+              <button id="searchIDBtn" class="btn btn-outline-success" type="submit">Search</button>
+            </div>
+            <div class="input-group my-1">
+              <input type="search" class="form-control rounded" placeholder="Search Session by Name" aria-label="Search"
+                aria-describedby="search-addon" id="searchName"/>
+              <button id="SearchNameBtn" class="btn btn-outline-success" type="submit">Search</button>
+            </div>
+            
+          </div>
+          <div class="h-50">
+			<div class="input-group my-1">
+				<button type="button" class="btn btn-primary btn-sm active" onclick="reload()">Reload</button> 
+			</div> 
+            <div class="input-group my-1">
+              <button type="button" class="btn btn-primary btn-sm active" onclick="gotoCreate()">create Session</button> 
+            </div> 
+            <div class="input-group my-1">
+              <button type="button" class="btn btn-primary btn-sm active" onclick="gotoCreateCourse()">create Course</button> 
+            </div> 
+            <div class="input-group my-1">
+              <button type="button" class="btn btn-primary btn-sm active" onclick="gotoAddPatientToCourse()">Add patient to course</button> 
+            </div> 
+            <div class="input-group my-1">
+              <button type="button" class="btn btn-primary btn-sm active" onclick="gotoAddPatientToSession()">Add patient to session</button> 
+            </div> 
+          </div>
+          
+        </div>
+				<div class="overflow-auto col-8" style="height: 500px;">
+					<table class="table table-bordered" id="scheduleTable" name="scheduleTable">
+						<thead class="thead-dark">
+							<tr>
+								
+							</tr>
+						</thead>
+						<tbody>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+		<script src="js/scheduleDetail.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-      <script src="./js/scheduleDetail.js"></script>  
-    </head>
-    <body>
-      <h1 class="h1" style="padding: 20px 20px 20px 20px;">Show Schedule</h1>
-   
-<!---
-    <div class="form-group" style="float:left;display:flex;width:50%" >
-    <input class="form-control"  type="text" placeholder="search session">
-    <span class="input-group-addon" style="color: #faf4f4; "></span>
-    <input class="form-control"  type="text" placeholder="search ID">
-    <span class="input-group-addon" style="color: #faf4f4; "></span>
-
-</div>
--->
-
-<form class="form-inline">
-  <div class="form-group">
-    <label for="Search session ID"></label>
-    <input type="text" class="form-control" id="Search session ID" placeholder="Search session ID">
-  </div>
-  <div class="form-group">
-      <label for="Search session ID"></label>
-  </div>
-</form>
-<br><br>
-<form class="form-inline">
-    <div class="form-group">
-      <label for="Choose session type "></label>
-      <input type="text" class="form-control" id="Choose session type " placeholder="Choose session type ">
-    </div>
-    <div class="form-group">
-        <label for="Session type"></label>
-         <select class="form-control">
-        <option>Interview</option>
-        <option>Physical Assessment</option>
-        <option>Other</option>
-    </select>
-    </div>
-  </form>
-<br>
-<script language="javascript" type="text/javascript">
-	function setVar(v_sel){
-	 	document.form0.txta1.value = v_sel.value;
-	}
-</script>
-<form name="form0" method="post" action="">
-<select name="sel1" id="sel1" onchange="setVar(this);">
- <option value="">Enter Duration time</option>
- <option value="">Enter start time</option>
-
-</select>
-<textarea id="txta1" name="txta1"></textarea>
-</form>
-
-<br>
-<br>
-<form class="form-inline">
-    <div class="form-group">
-      <label for="Add session"></label>
-      <input type="text" class="form-control" id="Add session" placeholder="Add session">
-    </div>
-    <div class="form-group">
-        <label for="Select session"></label>
-         <select class="form-control">
-        <option>Interview</option>
-        <option>Physical assessment</option>
-        <option>Other</option>
-    </select>
-    </div>
-  </form>
-  <br><br>
-    <form class="form-inline">
-    <div class="form-group">
-        <label for="Add instructor"></label>
-        <input type="text" class="form-control" id="Add instructor" placeholder="Add instructor">
-    </div>
-    <div class="form-group">
-        <input type="text" class="form-control" id="Add instructor" placeholder="search instructor">
-    </div>
-  </form>
-<br>
-<br>
-<form class="form-inline">
-    <div class="form-group">
-      <label for="Select time"></label>
-      <input type="text" class="form-control" id="Select time" placeholder="Select time">
-    </div>
-    <div class="form-group">
-        <label for="Select time"></label>
-        <input type="date" class="form-control" id="Select time">
-    </div>
-    <br>
-    </form>
-  <br>
- <br> 
- <button type="button" class="btn btn-primary btn-sm active" onclick="searchSession()">submit</button>  
- <br>
- <br>   
- <button type="button" class="btn btn-primary btn-sm active" onclick="gotoCreate()">create Session</button> 
-<!--create table for show the schedule-->
-  <table id="schedule-detail-table" class="table table-bordered">
-	<thead>
-		<tr>
-		</tr>
-	</thead>
-	<tbody>
-  </tbody>
-  </table>
-</form>
-
-<br>
-  <!--pop up-->
-  <!-- press add button -->
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="myModalLabel">
-           Prompt from add session
-          </h4>
-          <button type="button" class="close" data-dismiss="modal" 
-              aria-hidden="true">×
-          </button>
-        </div>
-        <div class="modal-body">
-          Conflict Status
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" 
-              data-dismiss="modal">NO
-          </button>
-          <button type="button" class="btn btn-primary">
-           YES
-          </button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->  
-
-  <button onclick="goBack()">Go Back</button>
-  
-  </body>
+	</body>
 </html>
-  
+
+
+
