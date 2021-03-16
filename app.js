@@ -1,71 +1,181 @@
+
+require('dotenv').config()
 const { response } = require("express");
 const express = require("express");
 const bodyParser = require("body-parser");
+const ejs = require("ejs");
+
 const cors = require('cors');
-const https = require("https");
 const moment = require("moment");
 const up_file = require("express-fileupload")
 const out_excel = require("xlsx");
 
 
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const app = express();
+const session = require("express-session")
+const passport = require("passport")
+const bcrypt = require("bcrypt");
+const flash = require("express-flash");
+
+const mysql = require('mysql');
+const connection = mysql.createConnection({
+    host: 'localhost' ,
+    user: 'otherSample' ,
+    password: 'test1234' ,
+    database: 'patientsdatabase' ,
+    port: '3306'
+})
 const DBService = require("./DB");
 const path = require("path");
 const { log } = require("console");
 const { type } = require("os");
 const { json } = require("body-parser");
 
+const {OAuth2Client} = require('google-auth-library');
+const cookieParser = require("cookie-parser");
+const CLIENT_ID = "603182702056-upj4qtftanvots870t215fo11sqc586m.apps.googleusercontent.com";
+const client = new OAuth2Client(CLIENT_ID);
 
+app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(up_file());
+app.use(cookieParser())
+app.use(flash())
+
+var users = []
 
 
 
+const initializePassport = require("./passport")
+initializePassport(
+    passport, 
+    email => users.find(user => user.email === email),
+    id => users.find(user => user.id === id))
+    
 
 
-app.get("/",function(req,res){
-    res.sendFile(path.join(__dirname + "/index.html"));
+app.use(session({
+    secret: "Our little secret.",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+app.get("/getAllAdmin",function(req,res){
+    const db = DBService.getDbServiceInstance();
+    const result = db.getAllAdmin();
+    result.then(data => res.json({data : data})).catch(error => console.log(error));
 });
 
-// app.get("/",function(req,res){
-//     res.sendFile(path.join(__dirname + "/signIn.html"));
-// });
+app.post("/postAdmin",function(req,res){
+    const db = DBService.getDbServiceInstance();
+    const user = req.body.postContent;
+    user.forEach(element => {
+        users.push({
+            id: element.id,
+            email: element.email,
+            password: element.password
+        })
+    });
+});
 
-// app.get("/index",function(req,res){
-//     res.sendFile(path.join(__dirname + "/index.html"));
-// });
 
-// app.get("/main",function(req,res){
-//     res.sendFile(path.join(__dirname + "/public/main.html"));
-// });
 
-app.post("/login",function(req,res){
-    var user = req.body.user;
-    var psw = req.body.psw;
-    // cannot log in without entering both username & psw
-    if (user && psw){
-        const db = DBService.getDbServiceInstance();
-        const result = db.searchAdmin(user,psw);
-        result.then( data =>{
-            if(data.length > 0){
-                console.log("login sucessed");
-                res.redirect('/index');
-            }
-            else{
-            console.log("login failed");
-            // retry
-            res.redirect('/');
-            }
-        }).catch(error => console.log(error));
-    }
-    else{
-        res.redirect('/');
-    }
+app.get("/", function(req,res) {
+    res.render("home");
 })
 
+app.get("/index",checkAuthenticated, function(req,res) {
+    res.render("index.ejs");
+})
+
+app.get("/login", function(req,res) {
+    res.render("login.ejs");
+})
+
+app.get("/register", function(req,res) {
+    res.render("register.ejs");
+})
+
+
+app.post("/register", async function(req,res) {
+    try {
+        const email = req.body.email
+        const id = Date.now().toString()
+        // const hashPassword = await bcrypt.hash(req.body.password, 10)
+        const password = req.body.password
+        const db = DBService.getDbServiceInstance();
+        const result = db.addAdmin(id,password,1,email);
+        
+        // users.push({
+        //     id: id,
+        //     email: email,
+        //     password: password
+        // })
+        result.then(data => 
+        
+            res.redirect("/login")
+            
+            ).catch(error => console.log(error));
+    } catch (error) {
+        res.redirect("/register")
+    }
+
+})
+
+app.post("/login", passport.authenticate('local', { 
+    successRedirect: '/index',
+    failureRedirect: '/login',
+    failureFlash: true
+}))
+
+app.post('/googleLogin', (req,res)=>{
+    let token = req.body.token;
+
+    async function verify() {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+        });
+        const payload = ticket.getPayload();
+        const userid = payload['sub'];
+        console.log(userid);
+      }
+      verify()
+      .then(()=>{
+          res.cookie('session-token', token);
+          res.send('success')
+      })
+      .catch(console.error);
+
+})
+
+app.get("/logout", function(req, res){
+    req.logout();
+    res.redirect("/");
+});
+
+function checkAuthenticated(req,res,next){
+    if (req.isAuthenticated()) {
+        return next()
+    }
+
+    res.redirect("/login")
+}
+
+// app.get("/", function(req,res){
+//     res.sendFile(__dirname + "/index.html")
+// });
+
+
+
+// ----------------------Functionality-----------------------------------------------------------------------------
 app.post("/createProfile",function(req,res){
     var patientNum = req.body.patientNum;
     var salutation = req.body.salutation;
@@ -113,6 +223,7 @@ app.get("/getPatient",function(req,res){
     const result = db.getPatient();
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 });
+
 
 
 app.get("/searchPtype/:name", function(req,res){
@@ -417,3 +528,7 @@ app.listen(5000, function(){
     console.log("Server running on port 5000");
 });
 
+
+// Client ID: 603182702056-upj4qtftanvots870t215fo11sqc586m.apps.googleusercontent.com
+
+// Client Key: SwMwVHl3KfuTvXQd0yihBPGZ

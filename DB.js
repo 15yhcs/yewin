@@ -10,6 +10,7 @@ const connection = mysql.createConnection({
     port: '3306'
 })
 
+
 connection.connect((err) => {
     if(err){
         console.log(err.message);
@@ -17,16 +18,51 @@ connection.connect((err) => {
     console.log("DB state: ", connection.state);
 })
 
+
 class DBService{
     static getDbServiceInstance(){
         return instance ? instance : new DBService()
     }
 
-    async searchAdmin(user,psw){
+
+    async addAdmin(adminID, psw, securityLevel, email){
         try{
             const response = await new Promise((resolve, reject) => {
-                const query = 'SELECT adminID from admin WHERE username = ? and password = ?';
+                const query = 'INSERT INTO admin (id, password,securityLevel, email) VALUES (?,?,?,?)';
+                connection.query(query, [adminID, psw, securityLevel, email], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+    }
+
+    async getAdmin(user,psw){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'SELECT * from admin WHERE email = ? and password = ?';
                 connection.query(query, [user,psw], (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+        return response;
+        }
+        catch(error){
+            console.log(error);}
+    }
+    async getAllAdmin(){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = 'SELECT * from admin';
+                connection.query(query, (error,result) => {
                     if(error){
                         reject(new Error(error.message));
                     }
