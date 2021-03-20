@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
-    fetch('http://localhost:5000/getPatient').then(response => response.json()).then(data => loadHTMLPatientTable(data));
-    fetch('http://localhost:5000/getAllCourse').then(response => response.json()).then(data => loadHTMLCourseTable(data));
+    fetch('http://localhost:5000/getPatient').then(response => response.json()).then(data => loadHTMLPatientTable(data["data"]));
+    fetch('http://localhost:5000/getAllCourse').then(response => response.json()).then(data => loadHTMLCourseTable(data["data"]));
 
 })
 
@@ -22,12 +22,12 @@ function loadHTMLPatientTable(data){
 
    table_html += "<tbody>"
    
-   for (i=0 ; i<data.data.length; i++){
-      var row_id = data.data[i].PatientNum;
+   for (i=0 ; i<data.length; i++){
+      var row_id = data[i].PatientNum;
       table_html += "<tr>";
-      table_html += "<td>" + data.data[i].Fname + "</td>";
-      table_html += "<td>" + data.data[i].PatientNum + "</td>";
-      table_html += "<td>" + data.data[i].Ptype + "</td>";
+      table_html += "<td>" + data[i].Fname + "</td>";
+      table_html += "<td>" + data[i].PatientNum + "</td>";
+      table_html += "<td>" + data[i].Ptype + "</td>";
       table_html += "<td><input type='checkbox' id='"+ row_id + "Checkbox' name='"+ row_id + "Checkbox'  value='"+ row_id +"' onclick=disablePatient(this)></td>"
       table_html += "</tr>";
    }
@@ -52,12 +52,12 @@ function loadHTMLCourseTable(data){
  
     table_html += "<tbody>"
     
-    for (i=0 ; i<data.data.length; i++){
-       var row_id = data.data[i].c_id;
+    for (i=0 ; i<data.length; i++){
+       var row_id = data[i].c_id;
        table_html += "<tr>";
        table_html += "<td>" + row_id + "</td>";
-       table_html += "<td>" + data.data[i].courseName + "</td>";
-       table_html += "<td>" + data.data[i].courseSpot + "</td>";
+       table_html += "<td>" + data[i].courseName + "</td>";
+       table_html += "<td>" + data[i].courseSpot + "</td>";
        table_html += "<td><input type='checkbox' id='"+ row_id + "CourseCheckbox' name='"+ row_id + "CourseCheckbox'  value='"+ row_id +"' onclick=disableCourse(this)></td>"
        table_html += "</tr>";
     }
@@ -129,3 +129,41 @@ function loadHTMLCourseTable(data){
       
    }
  }
+
+ const searchedPatientBtn = document.querySelector('#patientIdSelectBtn');
+
+searchedPatientBtn.addEventListener("click", function () {
+   const searchedPatient = document.querySelector('#patientIdSelect').value;
+   
+   
+   fetch('http://localhost:5000/getPatient').then(response => response.json()).then(data => {
+      for (i=0 ; i<data.data.length; i++){
+         if (data.data[i].PatientNum == searchedPatient) {
+            loadHTMLPatientTable([data.data[i]]);
+         }
+         
+      }
+      
+   })
+})
+
+const searchedCourseBtn = document.querySelector('#courseIdSelectBtn');
+
+searchedCourseBtn.addEventListener("click", function () {
+   const searchedCourse = document.querySelector('#courseIdSelect').value;
+   
+   
+   fetch('http://localhost:5000/getAllCourse').then(response => response.json()).then(data => {
+      for (i=0 ; i<data.data.length; i++){
+         if (data.data[i].c_id == searchedCourse) {
+            loadHTMLCourseTable([data.data[i]]);
+         }
+         
+      }
+      
+   })
+})
+
+function reload() {
+   window.location.reload();
+}

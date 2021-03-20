@@ -14,12 +14,26 @@ function loadHTMLTable(data){
     }
  
     for (i=0 ; i<data.data.length; i++){
-       table_html += "<tr onclick = openFile('"+ data.data[i].fileContent + "')>";
-       table_html += "<td>" + data.data[i].documentID + "</td>";
-       table_html += "<td>" + data.data[i].name + "</td>";
-       table_html += "<td>" + data.data[i].type + "</td>";
-       table_html += "</tr>";
-    }
+      
+      
+      table_html += "<tr>";
+      table_html += "<td>" + data.data[i].documentID + "</td>";
+      table_html += "<td>" + data.data[i].name + "</td>";
+      table_html += "<td>" + data.data[i].type + "</td>"; 
+      table_html += "</tr>";
 
+
+       
+       
+    }
+    
+    
+  
+    
     table.innerHTML = table_html;
+
+    
+  
  }
+
+

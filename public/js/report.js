@@ -1,17 +1,27 @@
 
 
-document.addEventListener('DOMContentLoaded', function(){
-    fetch('http://localhost:5000/getSession').then(response => response.json()).then(data => loadAllsession(data));
-
+let searchDateBtn = document.querySelector("#dateSearchBtn")
+searchDateBtn.addEventListener("click", () => {
+    let date = document.querySelector("#dateSelect").value;
+    fetch('http://localhost:5000/getSession').then(response => response.json()).then(data => loadAllsession(data,date));
 })
-function loadAllsession(data){
+
+
+
+
+function loadAllsession(data,date){
     const sessions = document.querySelector('#sessionSelect');
     let session_html = "<option selected>Select Session: </option>";
     var i;
     for (i=0 ; i<data.data.length; i++){
-        session_html += "<option>";
-        session_html += data.data[i].sessionName + ":" + data.data[i].sessionID + "(" + data.data[i].startTime + "-" + data.data[i].endTime + ")";
-        session_html += "</option>";
+        if (data.data[i].start_date == date || (data.data[i].repeatDates != null && data.data[i].repeatDates.includes(date))) {
+            session_html += "<option>";
+            session_html += data.data[i].sessionName + ":" + data.data[i].sessionID + "(" + data.data[i].startTime + "-" + data.data[i].endTime + ")";
+            session_html += "</option>";
+        }
+        // session_html += "<option>";
+        // session_html += data.data[i].sessionName + ":" + data.data[i].sessionID + "(" + data.data[i].startTime + "-" + data.data[i].endTime + ")";
+        // session_html += "</option>";
     }
 
     sessions.innerHTML = session_html;
@@ -59,12 +69,12 @@ toExcelNameBtn.onclick = function(){
     const searchNameValue = document.querySelector("#sessionSelect").value;
     const sessionName = searchNameValue.split(':')[1];
     const sessionID = sessionName.substring(0,sessionName.lastIndexOf("("));
-    fetch('http://localhost:5000/sessionParticipants/' + sessionID).then(response => response.json()).then(data => loadExportData(data["data"]));
+    fetch('http://localhost:5000/sessionParticipants/' + sessionID).then(response => response.json()).then(data => loadExportData(data["data"],sessionID));
 }
 
 
-function loadExportData(data){
+function loadExportData(data,sessionID){
     var user = JSON.stringify(data);
     
-    fetch('http://localhost:5000/export/' + user).then(response => response.json()).then(data => console.log(data));
+    fetch('http://localhost:5000/export/' + user + '/' + sessionID).then(response => response.json()).then(data => console.log(data));
 }

@@ -1,12 +1,19 @@
 document.addEventListener('DOMContentLoaded', function(){
-    fetch('http://localhost:5000/getPatient').then(response => response.json()).then(data => loadHTMLPatientTable(data));
-    fetch('http://localhost:5000/getSession').then(response => response.json()).then(data => loadHTMLSessionTable(data));
+    fetch('http://localhost:5000/getPatient').then(response => response.json()).then(data => loadHTMLPatientTable(data["data"]));
+    fetch('http://localhost:5000/getSession').then(response => response.json()).then(data => loadHTMLSessionTable(data["data"]));
 
 })
 
 
 // ALL PATIENT TABLE
 function loadHTMLPatientTable(data){
+   const searchedPatientBtn = document.querySelector('#patientIdSelectBtn');
+   searchedPatientBtn.onclick = function () {
+      const searchedPatient = document.querySelector('#patientIdSelect').value;
+      
+   }
+   
+   
    const table = document.querySelector('#patientTable');
    let table_html = " ";
    var i;
@@ -22,14 +29,17 @@ function loadHTMLPatientTable(data){
 
    table_html += "<tbody>"
    
-   for (i=0 ; i<data.data.length; i++){
-      var row_id = data.data[i].PatientNum;
+   for (i=0 ; i<data.length; i++){
+     
+      
+      var row_id = data[i].PatientNum;
       table_html += "<tr>";
-      table_html += "<td>" + data.data[i].Fname + "</td>";
-      table_html += "<td>" + data.data[i].PatientNum + "</td>";
-      table_html += "<td>" + data.data[i].Ptype + "</td>";
+      table_html += "<td>" + data[i].Fname + "</td>";
+      table_html += "<td>" + data[i].PatientNum + "</td>";
+      table_html += "<td>" + data[i].Ptype + "</td>";
       table_html += "<td><input type='checkbox' id='"+ row_id + "Checkbox' name='"+ row_id + "Checkbox'  value='"+ row_id +"'></td>"
       table_html += "</tr>";
+      
    }
    table_html += "</tbody>"
    table.innerHTML = table_html;
@@ -52,12 +62,12 @@ function loadHTMLSessionTable(data){
  
     table_html += "<tbody>"
     
-    for (i=0 ; i<data.data.length; i++){
-       var row_id = data.data[i].sessionID;
+    for (i=0 ; i<data.length; i++){
+       var row_id = data[i].sessionID;
        table_html += "<tr>";
        table_html += "<td>" + row_id + "</td>";
-       table_html += "<td>" + data.data[i].sessionName + "</td>";
-       table_html += "<td>" + data.data[i].start_date + "-" + data.data[i].end_date + "</td>";
+       table_html += "<td>" + data[i].sessionName + "</td>";
+       table_html += "<td>" + data[i].start_date + "-" + data[i].end_date + "</td>";
        table_html += "<td><input type='checkbox' id='"+ row_id + "sessionCheckbox' name='"+ row_id + "sessionCheckbox'  value='"+ row_id +"'></td>"
        table_html += "</tr>";
     }
@@ -111,3 +121,42 @@ function loadHTMLSessionTable(data){
       })
      
  }
+
+
+const searchedPatientBtn = document.querySelector('#patientIdSelectBtn');
+
+searchedPatientBtn.addEventListener("click", function () {
+   const searchedPatient = document.querySelector('#patientIdSelect').value;
+   
+   
+   fetch('http://localhost:5000/getPatient').then(response => response.json()).then(data => {
+      for (i=0 ; i<data.data.length; i++){
+         if (data.data[i].PatientNum == searchedPatient) {
+            loadHTMLPatientTable([data.data[i]]);
+         }
+         
+      }
+      
+   })
+})
+
+const searchedSessionBtn = document.querySelector('#sessionIdSelectBtn');
+
+searchedSessionBtn.addEventListener("click", function () {
+   const searchedSession = document.querySelector('#sessionIdSelect').value;
+   console.log(searchedSession);
+   
+   fetch('http://localhost:5000/getSession').then(response => response.json()).then(data => {
+      for (i=0 ; i<data.data.length; i++){
+         if (data.data[i].sessionID == searchedSession) {
+            loadHTMLSessionTable([data.data[i]]);
+         }
+         
+      }
+      
+   })
+})
+
+function reload() {
+   window.location.reload();
+}

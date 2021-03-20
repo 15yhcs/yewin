@@ -25,11 +25,11 @@ class DBService{
     }
 
 
-    async addAdmin(adminID, psw, securityLevel, email){
+    async addAdmin(adminID, psw, securityLevel, email, Fname, Lname){
         try{
             const response = await new Promise((resolve, reject) => {
-                const query = 'INSERT INTO admin (id, password,securityLevel, email) VALUES (?,?,?,?)';
-                connection.query(query, [adminID, psw, securityLevel, email], (error,result) => {
+                const query = 'INSERT INTO admin (id, password,securityLevel, email, FirstName, LastName) VALUES (?,?,?,?,?,?)';
+                connection.query(query, [adminID, psw, securityLevel, email, Fname, Lname], (error,result) => {
                     if(error){
                         reject(new Error(error.message));
                     }
@@ -95,6 +95,28 @@ class DBService{
             console.log(error);
         }
     }
+
+    async getPatientStartDate(){
+        try{
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT start_date, Fname, Lname FROM patient";
+                connection.query(query, (error,result) => {
+                    if(error){
+                        reject(new Error(error.message));
+                    }
+                    resolve(result);
+                })
+            })
+            
+            return response;
+            
+        }
+
+        catch(error){
+            console.log(error);
+        }
+    }
+    
 
     async insertNewPatient(patientNum,firstName,LastName,Gender,birthday,age,email,Ptype,assignedDoc,MedicalHis,PaidAmount,st,city,postalCode,Province,country,ContactName,PhoneNum,salutation,Mname,Pphone,Cphone,tStatus,tcause,verteran,group,sDate,eDate,servingDuration,Disability){
         try{

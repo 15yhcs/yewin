@@ -1,10 +1,4 @@
-// function gotoCreate() {
-//     window.location.href = "createSession.html";
-// }
 
-// function goBack() {
-//     window.location.href = "Schedule.html";
-// }
 let queryString = "";
 queryString += decodeURIComponent(window.location.search);
 var selectedDate =JSON.stringify(queryString.substring(queryString.lastIndexOf("=")+1, queryString.length));
@@ -114,21 +108,6 @@ searchIdButton.onclick = function(){
     
 }
 
-function gotoCreate() {
-    window.location.href = "createSession.html";
-}
-
-function gotoCreateCourse() {
-    window.location.href = "createCourse.html";
-}
-
-function gotoAddPatientToCourse() {
-    window.location.href = "addToCourse.html";
-}
-
-function gotoAddPatientToSession() {
-    window.location.href = "addToSession.html";
-}
 
 function reload(){
     window.location.reload();

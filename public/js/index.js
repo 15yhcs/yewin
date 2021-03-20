@@ -11,6 +11,9 @@ $('#left_nav .leftmenu-inner ul li a').click(function(){
 
 $('#user_collapse ul li a').click(function(){
     var _link = $(this).attr('_link');
+    if (_link == "/main.html") {
+        window.location.reload();
+    }
     $('#main').attr('src', _link);
 });
 

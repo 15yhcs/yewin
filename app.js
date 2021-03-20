@@ -9,6 +9,7 @@ const cors = require('cors');
 const moment = require("moment");
 const up_file = require("express-fileupload")
 const out_excel = require("xlsx");
+const fs = require("fs");
 
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -80,7 +81,9 @@ app.post("/postAdmin",function(req,res){
         users.push({
             id: element.id,
             email: element.email,
-            password: element.password
+            password: element.password,
+            firstName: element.FirstName,
+            lastName: element.LastName
         })
     });
 });
@@ -92,7 +95,8 @@ app.get("/", function(req,res) {
 })
 
 app.get("/index",checkAuthenticated, function(req,res) {
-    res.render("index.ejs");
+    userName = req.user.lastName + "" + req.user.firstName
+    res.render("index.ejs", { name: userName });
 })
 
 app.get("/login", function(req,res) {
@@ -110,8 +114,11 @@ app.post("/register", async function(req,res) {
         const id = Date.now().toString()
         // const hashPassword = await bcrypt.hash(req.body.password, 10)
         const password = req.body.password
+        const Lname = req.body.Lname
+        const Fname = req.body.Fname
+
         const db = DBService.getDbServiceInstance();
-        const result = db.addAdmin(id,password,1,email);
+        const result = db.addAdmin(id,password,1,email,Fname,Lname);
         
         // users.push({
         //     id: id,
@@ -218,9 +225,16 @@ app.post("/createProfile",function(req,res){
 
 });
 
+
 app.get("/getPatient",function(req,res){
     const db = DBService.getDbServiceInstance();
     const result = db.getPatient();
+    result.then(data => res.json({data : data})).catch(error => console.log(error));
+});
+
+app.get("/getPatientStartDate",function(req,res){
+    const db = DBService.getDbServiceInstance();
+    const result = db.getPatientStartDate();
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 });
 
@@ -263,22 +277,23 @@ app.patch("/update", function(req,res){
 })
 
 app.post("/uploadDoc", function(req,res){
+    
     if(req.files){
         
         var file = req.files.file;
         var file_type = req.body.docSelect;
         var file_name = file.name;
-        var jaso_file = JSON.stringify(file)
-        // var file_path = './upload/'+ file_name;
-        // file.mv(file_path, function(error){
-        //     if(error){
-        //         res.send(error);
-        //     }
-        //     else{
-        //         res.send("file uploaded");
-        //     }
-        // });
-        console.log(typeof file);
+        var jaso_file = file.data;
+        var file_path = __dirname + '/public/upload/'+ file_name;
+        file.mv(file_path, function(error){
+            if(error){
+                res.send(error);
+            }
+            else{
+                res.send("file uploaded");
+            }
+        });
+        console.log(jaso_file);
         const db = DBService.getDbServiceInstance();
         db.insertNewDoc(file_name, file_type, jaso_file);
     }
@@ -413,10 +428,11 @@ app.get("/sessionParticipants/:name", function(req,res){
     result.then(data => res.json({data : data})).catch(error => console.log(error));
 })
 
-app.get("/export/:name", function(req,res){
+app.get("/export/:name/:sessionID", function(req,res){
 
-    const { name } = req.params;
+    const { name, sessionID } = req.params;
     const user_data = JSON.parse(name);
+    const session = JSON.parse(sessionID);
     const user_columnName = [
         "PatientID",
         "First Name",
@@ -444,7 +460,7 @@ app.get("/export/:name", function(req,res){
         return[user.PatientNum,user.Fname,user.Lname,user.cellPhone,user.Email];
     })
     const user_sheet_name = "users";
-    const user_path = __dirname + "/exportContent.xlsx";
+    const user_path = __dirname + "/Session" + session + ".xlsx";
     const export_excel = (data, workSheetColumnNames, workSheetName, filePath) => {
         const workBook = out_excel.utils.book_new();
         const workSheetData = [
@@ -527,8 +543,3 @@ app.post("/addIntoSession",function(req,res){
 app.listen(5000, function(){
     console.log("Server running on port 5000");
 });
-
-
-// Client ID: 603182702056-upj4qtftanvots870t215fo11sqc586m.apps.googleusercontent.com
-
-// Client Key: SwMwVHl3KfuTvXQd0yihBPGZ
