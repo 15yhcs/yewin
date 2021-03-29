@@ -10,6 +10,14 @@ const connection = mysql.createConnection({
     port: '3306'
 })
 
+// const connection = mysql.createConnection({
+//     host: 'us-cdbr-east-03.cleardb.com' ,
+//     user: 'b1e8597446761c' ,
+//     password: 'fffe72b7' ,
+//     database: 'patientsdatabase' ,
+//     port: '3306'
+// })
+
 
 connection.connect((err) => {
     if(err){

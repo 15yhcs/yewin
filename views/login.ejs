@@ -6,10 +6,13 @@
     <div class="col-sm-8">
       <div class="card">
         <div class="card-body">
-
+          <div>
+              <% if(messages.error){ %>
+                <%= messages.error %>
+              <%}%>
+          </div>
           <!-- Makes POST request to /login route -->
           <form action="/login" method="POST">
-            
             <div class="form-group">
               <label for="email">Email</label>
               <input type="email" class="form-control" name="email">
@@ -49,7 +52,12 @@
       })
     }
   })
-
+  function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+        console.log('User signed out.');
+        });
+  }
   function onSignIn(googleUser) {
         // var profile = googleUser.getBasicProfile();
         // console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
@@ -59,13 +67,13 @@
         var id_token = googleUser.getAuthResponse().id_token;
         // console.log(id_token);
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/login');
+        xhr.open('POST', '/googleLogin');
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onload = function() {
             console.log('Signed in as: ' + xhr.responseText);
             if(xhr.responseText == 'success'){
                 signOut();
-                location.assign('index')
+                location.assign('/profile')
             }
         };
         xhr.send(JSON.stringify({token : id_token}));

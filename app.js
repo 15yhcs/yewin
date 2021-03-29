@@ -49,21 +49,18 @@ app.use(flash())
 
 var users = []
 
-
-
 const initializePassport = require("./passport")
 initializePassport(
     passport, 
     email => users.find(user => user.email === email),
     id => users.find(user => user.id === id))
     
-
-
 app.use(session({
     secret: "Our little secret.",
     resave: false,
     saveUninitialized: false
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -119,12 +116,6 @@ app.post("/register", async function(req,res) {
 
         const db = DBService.getDbServiceInstance();
         const result = db.addAdmin(id,password,1,email,Fname,Lname);
-        
-        // users.push({
-        //     id: id,
-        //     email: email,
-        //     password: password
-        // })
         result.then(data => 
         
             res.redirect("/login")
@@ -152,7 +143,7 @@ app.post('/googleLogin', (req,res)=>{
         });
         const payload = ticket.getPayload();
         const userid = payload['sub'];
-        console.log(userid);
+        
       }
       verify()
       .then(()=>{
@@ -163,10 +154,19 @@ app.post('/googleLogin', (req,res)=>{
 
 })
 
-app.get("/logout", function(req, res){
-    req.logout();
-    res.redirect("/");
-});
+app.get('/profile', checkAuthenticatedGoogle , (req, res)=>{
+    let user = req.user;
+    const db = DBService.getDbServiceInstance();
+    const result = db.getAllAdmin();
+    result.then(data => {
+            data.forEach(element => {
+                if (req.user.email === element.email) {
+                    res.render('index', { name: user.name});
+                }
+            });
+        }).catch(error => 
+            res.render("login"));
+})
 
 function checkAuthenticated(req,res,next){
     if (req.isAuthenticated()) {
@@ -176,9 +176,37 @@ function checkAuthenticated(req,res,next){
     res.redirect("/login")
 }
 
-// app.get("/", function(req,res){
-//     res.sendFile(__dirname + "/index.html")
-// });
+
+function checkAuthenticatedGoogle(req, res, next){
+
+    let token = req.cookies['session-token'];
+
+    let user = {};
+    async function verify() {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+        });
+        const payload = ticket.getPayload();
+        user.name = payload.name;
+        user.email = payload.email;
+        user.picture = payload.picture;
+    }
+    verify()
+    .then(()=>{
+        req.user = user;
+        next();
+    })
+    .catch(err=>{
+        res.redirect('/login')
+    })
+
+}
+
+app.get("/logout", function(req, res){
+    res.clearCookie('session-token');
+    res.redirect("/");
+});
 
 
 
@@ -279,12 +307,11 @@ app.patch("/update", function(req,res){
 app.post("/uploadDoc", function(req,res){
     
     if(req.files){
-        
         var file = req.files.file;
         var file_type = req.body.docSelect;
         var file_name = file.name;
         var jaso_file = file.data;
-        var file_path = __dirname + '/public/upload/'+ file_name;
+        var file_path = __dirname + "/public/upload/" + file_type+ "/" + file_name;
         file.mv(file_path, function(error){
             if(error){
                 res.send(error);
@@ -293,7 +320,7 @@ app.post("/uploadDoc", function(req,res){
                 res.send("file uploaded");
             }
         });
-        console.log(jaso_file);
+        console.log(file_type);
         const db = DBService.getDbServiceInstance();
         db.insertNewDoc(file_name, file_type, jaso_file);
     }
@@ -340,8 +367,19 @@ app.post("/createSession",function(req,res){
     var repeatDuration = req.body.repeat_duration;
     var repeatStatus = req.body.repeat_status;
 
+    
+    var repeatDayCal = (day) => {
+        if (day.length == 1) {
+            var rt_array = [];
+            rt_array.push(day);
+            return rt_array;
+        }
+        else{
+            return day
+        }
+      };
 
-    var repeatDay = req.body.repeat_day;
+    var repeatDay = repeatDayCal(req.body.repeat_day);
     
     if(repeatStatus === "Yes"){
 
@@ -460,7 +498,7 @@ app.get("/export/:name/:sessionID", function(req,res){
         return[user.PatientNum,user.Fname,user.Lname,user.cellPhone,user.Email];
     })
     const user_sheet_name = "users";
-    const user_path = __dirname + "/Session" + session + ".xlsx";
+    const user_path = __dirname + "/sessionReport/Session" + session + ".xlsx";
     const export_excel = (data, workSheetColumnNames, workSheetName, filePath) => {
         const workBook = out_excel.utils.book_new();
         const workSheetData = [
@@ -539,6 +577,18 @@ app.post("/addIntoSession",function(req,res){
     db.addIntoSession(result_int);
          
 })
+
+app.post("/addAdmin", async function(req,res){
+    const userEmail = req.body.adminEmail
+    const id = Date.now().toString()
+    const hashPassword = await bcrypt.hash(id, 10);
+    const Lname = req.body.Lname
+    const Fname = req.body.Fname
+    const db = DBService.getDbServiceInstance();
+    const result = db.addAdmin(id,hashPassword,1,userEmail,Fname,Lname)
+    result.then(data => res.json({data : data})).catch(error => console.log(error));
+})
+
 
 app.listen(5000, function(){
     console.log("Server running on port 5000");
